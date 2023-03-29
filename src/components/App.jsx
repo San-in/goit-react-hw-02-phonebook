@@ -4,6 +4,7 @@ import React from 'react';
 import { ContactForm } from 'components/ContactForm/ContactForm';
 import { Filter } from 'components/Filter/Filter';
 import { ContactList } from 'components/ContactList/ContactList ';
+import { nanoid } from 'nanoid';
 
 export class App extends Component {
   state = {
@@ -12,19 +13,23 @@ export class App extends Component {
   };
 
   createContact = newItem => {
-    this.state.contacts.some(
+    const isInContacts = this.state.contacts.some(
       contact => contact.name.toLowerCase() === newItem.name.toLowerCase()
-    )
-      ? alert(`${newItem.name} is already in contacts.`)
-      : this.setState(prevState => {
-          return {
-            contacts: [...prevState.contacts, newItem],
-          };
-        });
+    );
+    if (isInContacts) {
+      alert(`${newItem.name} is already in contacts.`);
+      return;
+    }
+    const newContact = { ...newItem, id: nanoid() };
+    this.setState(prevState => {
+      return {
+        contacts: [...prevState.contacts, newContact],
+      };
+    });
   };
 
   onFindInput = e => {
-    this.setState({ filter: e.currentTarget.value });
+    this.setState({ filter: e.target.value });
   };
 
   createFilteredList = () => {
@@ -43,6 +48,7 @@ export class App extends Component {
   };
 
   render() {
+    const filteredList = this.createFilteredList();
     return (
       <div
         style={{
@@ -58,11 +64,17 @@ export class App extends Component {
         <h3>Phonebook</h3>
         <ContactForm createContact={this.createContact} />
         <h3>Contacts</h3>
-        <Filter onFindInput={this.onFindInput} />
-        <ContactList
-          contactsList={this.state.filter ? this.createFilteredList() : []}
-          deleteContact={this.deleteContact}
-        />
+        {this.state.contacts.length > 0 ? (
+          <>
+            <Filter onFindInput={this.onFindInput} />
+            <ContactList
+              contactsList={filteredList}
+              deleteContact={this.deleteContact}
+            />
+          </>
+        ) : (
+          <p>No contacts</p>
+        )}
       </div>
     );
   }

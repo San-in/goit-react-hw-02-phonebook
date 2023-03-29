@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { nanoid } from 'nanoid';
 import PropTypes from 'prop-types';
 
 import {
@@ -9,24 +8,13 @@ import {
 } from 'components/ContactForm/ContactForm.styled';
 
 export class ContactForm extends Component {
-  state = {
-    name: '',
-    number: '',
-  };
-
   onAddContact = e => {
     e.preventDefault();
-    const name = e.currentTarget.name.value;
-    const number = e.currentTarget.number.value;
-    this.setState({
-      name,
-      number,
-    });
+    const { name, number } = e.currentTarget;
 
     this.props.createContact({
-      name,
-      number,
-      id: nanoid(),
+      name: name.value,
+      number: number.value,
     });
     e.currentTarget.reset();
   };
